@@ -1,136 +1,214 @@
 import java.util.Scanner;
 
-       class CaseStudy1 {
-     String name;
-     String parent_name;
-     String address;
-     int age;
-     String account_type;
-     int acc_no;
-     int pan;
-     int pin;
-     int date_of_birth;
-     int total_amount=45000;
-     int deposit_money;
-     int withdraw_money;
-     String current_balance;
+// Base Class
+class BankAccount {
 
-     void Create_Account(){
-        Scanner sc =new Scanner(System.in);
-        System.out.println("*********creating_new_account**********");
-        System.out.println("enter name");
-        name=sc.nextLine();
-        System.out.println("enter parent name");
-        parent_name = sc.nextLine();
-        System.out.println("enter age");
-        age =sc.nextInt();
-        System.out.println("enter account no");
-        acc_no=sc.nextInt();
-        System.out.println("enter address");
-        address=sc.nextLine();
-        System.out.println("enter pin");
-        pin =sc.nextInt();
-       
+    // Static (shared)
+    private static String bankName = "State Bank of India";
+    private static int accountCounter = 1000;
+
+    // Encapsulated data
+    private String name;
+    private String parentName;
+    private String address;
+    private int age;
+    private int accountNumber;
+    private int pin;
+    protected double balance;
+
+    // Security flag (IMPORTANT)
+    private boolean isAuthenticated = false;
+
+    // Constructor
+    public BankAccount(String name, String parentName, String address, int age, int pin) {
+        this.name = name;
+        this.parentName = parentName;
+        this.address = address;
+        this.age = age;
+        this.pin = pin;
+        this.accountNumber = ++accountCounter;
+        this.balance = 45000;
     }
 
-    void Display_account_details(){
-        Scanner sc =new Scanner (System.in);
-        System.out.println("enter pin");
-        pan =sc.nextInt();
-        if(pan==pin){
-            System.out.println("name ="+name);
-            System.out.println("parent name ="+parent_name);
-            if(age>18){
-            System.out.println("age"+age);
-            System.out.println( "acc_no"+acc_no);
-            System.out.println("address"+address);
-            
-            System.out.println("account created succesfully");
-            }else{
-                System.out.println("age will be  above 18 ,please enter valid age");
-            }
+    // Static method
+    public static void showBankInfo() {
+        System.out.println("Welcome to " + bankName);
+    }
+
+    // 🔐 LOGIN (Authentication)
+    public boolean login(int inputPin) {
+        if (this.pin == inputPin) {
+            isAuthenticated = true;
+            System.out.println("Login successful");
+            return true;
+        } else {
+            System.out.println("Invalid PIN");
+            return false;
         }
-        
     }
 
-    void Deposit_money(){
-        Scanner sc =new Scanner(System.in);
-        System.out.println("enter deposit money");
-        deposit_money=sc.nextInt();
-        System.out.println("money will deposited in account succesfully");
-        total_amount=deposit_money+total_amount;
-        System.out.println("current balance in account"+total_amount);
-
-
-        
+    // 🔐 LOGOUT
+    public void logout() {
+        isAuthenticated = false;
+        System.out.println("Logged out successfully");
     }
-    void Withdraw_money(){
-        Scanner sc =new Scanner(System.in);
 
-        System.out.println("enter withdraw amount");
-        withdraw_money=sc.nextInt();
-        if(withdraw_money<total_amount){
-        total_amount=total_amount - withdraw_money;
-        System.out.println(withdraw_money+"amount is withdraw succesfully");
-        System.out.println("current balance in account"+total_amount);
-
-
-        }else{
-            System.out.println("insuficient balance");
+    // 🔐 Internal security check
+    private boolean checkAccess() {
+        if (!isAuthenticated) {
+            System.out.println("Access denied! Please login first.");
+            return false;
         }
-
-
-    }
-    void check_balance(){
-        System.out.println("current balance in account"+total_amount);
+        return true;
     }
 
-    
+    // 🔐 SECURE DISPLAY
+    public void displayDetails() {
+        if (!checkAccess()) return;
+
+        if (age > 18) {
+            System.out.println("\n--- Account Details ---");
+            System.out.println("Bank: " + bankName);
+            System.out.println("Account No: " + accountNumber);
+            System.out.println("Name: " + name);
+            System.out.println("Parent: " + parentName);
+            System.out.println("Age: " + age);
+            System.out.println("Address: " + address);
+        } else {
+            System.out.println("Invalid age (must be >18)");
+        }
+    }
+
+    // 🔐 SECURE DEPOSIT
+    public void deposit(double amount) {
+        if (!checkAccess()) return;
+
+        if (amount > 0) {
+            balance += amount;
+            System.out.println("Deposited: " + amount);
+            System.out.println("Balance: " + balance);
+        } else {
+            System.out.println("Invalid amount");
+        }
+    }
+
+    // 🔐 SECURE WITHDRAW (can be overridden)
+    public void withdraw(double amount) {
+        if (!checkAccess()) return;
+
+        if (amount <= balance && amount > 0) {
+            balance -= amount;
+            System.out.println("Withdrawn: " + amount);
+            System.out.println("Balance: " + balance);
+        } else {
+            System.out.println("Invalid or insufficient balance");
+        }
+    }
+
+    // 🔐 SECURE BALANCE CHECK
+    public void checkBalance() {
+        if (!checkAccess()) return;
+
+        System.out.println("Current Balance: " + balance);
+    }
 }
 
-public class pay{
-    public static void main(String[] args) {
-        
-        CaseStudy1 obj =new CaseStudy1();
-        Scanner sc =new Scanner(System.in);
-        int ch;
-        
-        do{
-            int choice;
-        System.out.println("1.create account\n\t 2.display account details\n\t 3.deposit money\n\t 4.withdrawmoney\n\t 5.checkbalance");
-         choice=sc.nextInt();
-        switch(choice){
-            case 1:
-            {
-                obj.Create_Account();
-                break;
-            }
-            case 2:
-            {
-                obj.Display_account_details();
-                break;
-            }
-            case 3:
-            {
-                obj.Deposit_money();
-                break;
-            }
-            case 4:
-            {
-                obj.Withdraw_money();
-                break;
-            }
-            case 5:
-            {
-                 obj.check_balance();
-                 break;
-            }
-        }
-        
-        System.out.println("1.continue/n/t 2.exit");
-         ch=sc.nextInt();
-     } while(ch==1);
+// Derived Class (Polymorphism)
+class SavingsAccount extends BankAccount {
+
+    public SavingsAccount(String name, String parentName, String address, int age, int pin) {
+        super(name, parentName, address, age, pin);
     }
 
-    
-}        
+    @Override
+    public void withdraw(double amount) {
+        if (amount > 10000) {
+            System.out.println("Savings limit exceeded (max 10000)");
+        } else {
+            super.withdraw(amount);
+        }
+    }
+}
+
+// Main Class
+public class SecureBankApp {
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        BankAccount.showBankInfo();
+
+        // Account creation
+        System.out.print("Enter Name: ");
+        String name = sc.nextLine();
+
+        System.out.print("Enter Parent Name: ");
+        String parent = sc.nextLine();
+
+        System.out.print("Enter Address: ");
+        String address = sc.nextLine();
+
+        System.out.print("Enter Age: ");
+        int age = sc.nextInt();
+
+        System.out.print("Set PIN: ");
+        int pin = sc.nextInt();
+
+        BankAccount account = new SavingsAccount(name, parent, address, age, pin);
+
+        int choice, ch;
+
+        do {
+            System.out.println("\n1. Login");
+            System.out.println("2. Display Details");
+            System.out.println("3. Deposit");
+            System.out.println("4. Withdraw");
+            System.out.println("5. Check Balance");
+            System.out.println("6. Logout");
+
+            System.out.print("Enter choice: ");
+            choice = sc.nextInt();
+
+            switch (choice) {
+
+                case 1:
+                    System.out.print("Enter PIN: ");
+                    int inputPin = sc.nextInt();
+                    account.login(inputPin);
+                    break;
+
+                case 2:
+                    account.displayDetails();
+                    break;
+
+                case 3:
+                    System.out.print("Enter amount: ");
+                    account.deposit(sc.nextDouble());
+                    break;
+
+                case 4:
+                    System.out.print("Enter amount: ");
+                    account.withdraw(sc.nextDouble());
+                    break;
+
+                case 5:
+                    account.checkBalance();
+                    break;
+
+                case 6:
+                    account.logout();
+                    break;
+
+                default:
+                    System.out.println("Invalid choice");
+            }
+
+            System.out.print("\n1. Continue  2. Exit: ");
+            ch = sc.nextInt();
+
+        } while (ch == 1);
+
+        System.out.println("Thank you!");
+    }
+}
